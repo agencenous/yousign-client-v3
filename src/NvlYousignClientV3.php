@@ -65,13 +65,19 @@ class NvlYousignClientV3
      * @param $apikey
      * @param $mode
      */
-    public function __construct($apikey)
+    public function __construct($apikey,$mode)
     {
-        // le mode dev ou prod se fait en fonction de la clef d'API
-        $this->setApikey($apikey);
 
-        $this->apiBaseUrl = 'https://api-sandbox.yousign.app/v3/';
-        $this->apiBaseUrlWslash = 'https://api-sandbox.yousign.app/v3';
+        $this->setApikey($apikey);
+        if ($mode == 'prod'){
+            $this->apiBaseUrl = 'https://api.yousign.app/v3/';
+            $this->apiBaseUrlWslash = 'https://api.yousign.app/v3';
+        } else {
+            // https://api-sandbox.yousign.app/v3/webhooks
+            $this->apiBaseUrl = 'https://api-sandbox.yousign.app/v3/';
+            $this->apiBaseUrlWslash = 'https://api-sandbox.yousign.app/v3';
+        }
+
     }
 
     public static function world()
