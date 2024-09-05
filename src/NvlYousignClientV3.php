@@ -1,7 +1,7 @@
 <?php
 
 
-namespace OlivierNvlYousignClientApiV3;
+namespace NvlYousignClientApiV3;
 
 
 class NvlYousignClientV3
@@ -478,6 +478,37 @@ class NvlYousignClientV3
         curl_close($curl);
 
         return $this->ActivateSignatureResponse;
+    }
+
+    public function createWebhook($params)
+    {
+        // data for all event :
+        // la V3 de Yousign permet la création de 5 Webhook differents
+        /*
+        $data = {"sandbox":true,"auto_retry":true,"enabled":true,"subscribed_events":["*"],"endpoint":"https://mondomaine.com/routequirecoiteventyousign","description":"all event "}
+        */
+
+        ## 4 - create webhook:
+        $data=json_encode($params);
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => sprintf('%s/webhooks', $this->apiBaseUrlWslash),
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => [
+                sprintf('Authorization: Bearer %s', $this->apikey),
+                'Content-Type: application/json'
+            ],
+        ]);
+
+        $initActivateSignatureRequestResponse = curl_exec($curl);
+
+        $this->ActivateSignatureResponse = json_decode($initActivateSignatureRequestResponse,true);
+        curl_close($curl);
+
+        return $this->ActivateSignatureResponse;
+
+
     }
 
 }

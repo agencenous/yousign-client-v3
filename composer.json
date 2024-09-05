@@ -5,7 +5,7 @@
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "Oliviernival\\YousignClientApiV32024\\": "src/"
+            "NvlYousignClientApiV3\\": "src/"
         }
     },
     "authors": [
