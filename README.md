@@ -7,12 +7,12 @@ https://developers.yousign.com/docs/introduction-new
 
 # Installation
 via composer
-``` 
+```php 
 composer require oliviernival/yousign-client-api-v3-2024
 ```
 # Utilisation
 
-```
+```php
 <?php
 require_once '/path/to/vendor/autoload.php';
 $apikey = "votre-clef-yousign";
@@ -69,7 +69,7 @@ cela va nous permettre de dire à Yousign de nous envoyer des requettes avec les
 au différentes étapes de la signature.
 Nous avons donc la possibilité de créer des webhook qui alertent à toutes les étapes ou seulement à certaines.
 
-```
+```php
 // création du webhook
 
 // webhook pour avoir tous les events :
