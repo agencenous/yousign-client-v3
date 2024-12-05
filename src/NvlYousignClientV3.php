@@ -77,12 +77,21 @@ class NvlYousignClientV3
     private $signLink;
 
     /**
+     * @var string
+     */
+    private $pdfBaseDir;
+
+
+
+    /**
      * NvlYousignClientV3 constructor.
      * @param $apikey
      * @param $mode
      */
     public function __construct($apikey,$mode)
     {
+        // chemin absolut du répertoire du fichier pdf à signer pour les procédures avancés :
+        $this->pdfBaseDir = '/home/web/pdftemp/';
 
         $this->setApikey($apikey);
         if ($mode == 'prod'){
@@ -105,6 +114,24 @@ class NvlYousignClientV3
     /**
      *  les get et set génériques
      */
+
+    /**
+     * @return string
+     */
+    public function getPdfBaseDir()
+    {
+        return $this->pdfBaseDir;
+    }
+
+    /**
+     * @param string $pdfBaseDir
+     * @return NvlYousignClientV3
+     */
+    public function setPdfBaseDir(string $pdfBaseDir)
+    {
+        $this->pdfBaseDir = $pdfBaseDir;
+        return $this;
+    }
 
 
     /**
@@ -591,7 +618,7 @@ class NvlYousignClientV3
 
     public function AdvancedProcedureAddFile($filepathOrFileContent,$namefile,$filecontent = false)
     {
-        $this->nbPages = $this->countPages('/home/app/public_html/web/pdftemp/'.$namefile);
+        $this->nbPages = $this->countPages($this->pdfBaseDir.$namefile);
 
 
 
@@ -604,7 +631,7 @@ class NvlYousignClientV3
                 CURLOPT_CUSTOMREQUEST => 'POST',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_POSTFIELDS => [
-                    'file' => new \CURLFile('/home/app/public_html/web/pdftemp/'.$pdfDocumentPath, 'application/pdf'),
+                    'file' => new \CURLFile($this->pdfBaseDir.$pdfDocumentPath, 'application/pdf'),
                     'nature' => 'signable_document',
                     'parse_anchors' => 'true'
                 ],

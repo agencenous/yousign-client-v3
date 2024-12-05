@@ -103,6 +103,13 @@ $mode = "prod";
 
 $wizisign = new NvlYousignClientApiV3\NvlYousignClientV3('yourapikey',$mode);
 
+// on indique le chemin du répertoire du fichier pdf
+// chemin absolut du répertoire du fichier pdf à signer pour les procédures avancés :
+// $this->pdfBaseDir = '/home/web/pdftemp/'; // c'est la valeur par défaut
+
+// si le dossier ou se trouve le pdf est : '/home/www/pdftemp',
+// on utilise la méthode pour changer l'emplacement par défaut comme ceci
+$wizisign->setPdfBaseDir('/home/www/pdftemp');
 
 /**
          * ici nous créons une procedure en mode avancé
