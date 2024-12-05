@@ -593,9 +593,7 @@ class NvlYousignClientV3
     {
         $this->nbPages = $this->countPages('/home/app/public_html/web/pdftemp/'.$namefile);
 
-        $text = '****************************** on passe dans le AdvancedProcedureAddFile 1 fichier pdf '.$namefile.' ******************************************';
 
-        file_put_contents('pdfYousignv3.txt', $text.PHP_EOL, FILE_APPEND);
 
         $pdfDocumentPath = $namefile;
         $curl = curl_init();
@@ -620,9 +618,7 @@ class NvlYousignClientV3
         $this->documentId = $this->documentUploadResponse['id'];
 
         curl_close($curl);
-        $text = '****************************** on passe dans le AdvancedProcedureAddFile 22 fichier pdf '.$namefile.' on set document_id : '.$this->documentId.' ******************************************';
 
-        file_put_contents('pdfYousignv3.txt', $text.PHP_EOL, FILE_APPEND);
 
         return $this->documentUploadResponse;
 
@@ -652,9 +648,7 @@ class NvlYousignClientV3
             ]
         ];
 
-        $text = '****************************** on passe dans le AdvancedProcedureAddMember fichier pdf  document_id : '.$this->getDocumentId().' ******************************************';
 
-        file_put_contents('pdfYousignv3.txt', $text.PHP_EOL, FILE_APPEND);
 
         return json_encode($this->signerData);
 
@@ -694,11 +688,7 @@ class NvlYousignClientV3
         ];
         $data = json_encode($this->signerData);
 
-        $text = '****************************** on passe dans le AdvancedProcedureFileObject document_id : '.$this->getDocumentId().'  et on envoie ceci ******************************************';
 
-        file_put_contents('pdfYousignv3.txt', $text.PHP_EOL, FILE_APPEND);
-
-        file_put_contents('pdfYousignv3.txt', $data.PHP_EOL, FILE_APPEND);
 
 
         $curl = curl_init();
@@ -742,11 +732,7 @@ class NvlYousignClientV3
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        $text = '****************************** on passe dans le AdvancedProcedurePut httpcode : '.$httpcode.'  et on recupère ceci ******************************************';
 
-        file_put_contents('pdfYousignv3.txt', $text.PHP_EOL, FILE_APPEND);
-
-        file_put_contents('pdfYousignv3.txt', $initActivateSignatureRequestResponse.PHP_EOL, FILE_APPEND);
 
 
         return $this->ActivateSignatureResponse;
@@ -778,11 +764,7 @@ class NvlYousignClientV3
         $this->memberList = json_decode($initListMemberRequestResponse,true);
         curl_close($curl);
 
-        $text = '****************************** on passe dans le AdvancedProcedureGetMembers httpcode :  et on recupère ceci ******************************************';
 
-        file_put_contents('pdfYousignv3.txt', $text.PHP_EOL, FILE_APPEND);
-
-        file_put_contents('pdfYousignv3.txt', $initListMemberRequestResponse.PHP_EOL, FILE_APPEND);
 
 
         return $this->memberList;
@@ -808,11 +790,7 @@ class NvlYousignClientV3
         $this->signLink = json_decode($initSignLinkRequestResponse,true);
         curl_close($curl);
 
-        $text = '****************************** on passe dans le AdvancedProcedureGetSignLink httpcode :  et on recupère ceci ******************************************';
 
-        file_put_contents('pdfYousignv3.txt', $text.PHP_EOL, FILE_APPEND);
-
-        file_put_contents('pdfYousignv3.txt', $initSignLinkRequestResponse.PHP_EOL, FILE_APPEND);
 
         return $this->signLink;
 
@@ -869,11 +847,7 @@ class NvlYousignClientV3
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
 
-        $text = '****************************** on passe dans le downloadSignedFileInfos :  et on recupère ceci ******************************************';
-
-        file_put_contents('pdfYousignv3.txt', $text.PHP_EOL, FILE_APPEND);
-
-        file_put_contents('pdfYousignv3.txt', $response.PHP_EOL, FILE_APPEND);
+        
         json_decode($response,true);
 
 
