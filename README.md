@@ -281,3 +281,5 @@ Vous devez avoir créé un webhook qui envoie une requette vers votre serveur po
 
 
 ```
+# Travaux en cours :
+la méthode de récupération du fichier de preuve pour la signature d'un signataire
