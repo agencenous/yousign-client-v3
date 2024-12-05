@@ -101,7 +101,7 @@ ainsi pour la plupart des méthodes de procédures avancées les signatures sont
 
 $mode = "prod";
 
-$wizisign = new WiziSignClient('yourapikey',$mode);
+$wizisign = new NvlYousignClientApiV3\NvlYousignClientV3('yourapikey',$mode);
 
 
 /**
