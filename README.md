@@ -86,3 +86,5 @@ $params = [
 $client->createWebhook($params);
 
 ```
+
+# les méthodes pour les procédures avancées ont été ajoutées. elle s'utilisent sensiblement de la même façon que pour le sdk V2
