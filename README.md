@@ -184,3 +184,100 @@ $wizisign = new NvlYousignClientApiV3\NvlYousignClientV3('yourapikey',$mode);
         }
 
 ```
+# récupérer signature via le webhook envoyé par yousign
+
+Vous devez avoir créé un webhook qui envoie une requette vers votre serveur pour chaque actions
+
+```php
+// exemple de route symfony qui reçoit le webhook
+
+/**
+     * Signer un document de contrat webhook yousign V3
+     *
+     * @Route("/sign-contract-document-v3", name="sign_contract_document_v3")
+     * @Method({"GET", "POST"})
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
+    public function signContractDocumentV3Action(Request $request)
+    {
+
+        $request_body = $request->getContent();
+        
+
+        $request_bodyArray = array();
+        $request_bodyArray = \json_decode($request_body, true);
+        // new api
+        $em = $this->getDoctrine()->getManager();
+        $signatureToken = $request_bodyArray['data']['signer']['id']; // token correspondant dans document_signature id de celui qui signe
+        $signatureStatus = $request_bodyArray['data']['signer']['status']; // "signed" pour document signé
+        $signatureDocId = $request_bodyArray['data']['signature_request']['documents'][0]['id']; // doc id sur yousign
+        $signatureRequestId = $request_bodyArray['data']['signature_request']['id']; // id de la procedure sur yousign
+
+        $fileid = [
+            'srid' => $request_bodyArray['data']['signature_request']['id'],
+            'docid' => $request_bodyArray['data']['signature_request']['documents'][0]['id']
+        ];
+
+
+        // recup de ma signature en DB à adapter celon votre DB
+        $signature = $em->getRepository('AppBundle:DocumentSignature')->findOneByToken($signatureToken);
+
+        if ($signature and $signatureStatus == 'signed' and !$signature->isDone()) {
+            $text = 'condition signature trouvée';
+
+            
+
+            // ici j'appelle un service symfony afin de traiter les choses
+            //$this->get('app.contract')->signDocumentNewAPI($signature,$request_bodyArray);
+            
+            // pour l'exemple nous allons faire le traitement ici'
+            
+           $fileapiid = [
+            'srid' => $request_bodyArray['data']['signature_request']['id'],
+            'docid' => $request_bodyArray['data']['signature_request']['documents'][0]['id']
+            ];
+            
+            $mode = "prod";
+
+            $wizisign = new NvlYousignClientApiV3\NvlYousignClientV3('yourapikey',$mode);
+
+            $fileInfosResultinterface = $wizisign->downloadSignedFileInfos($fileapiid,'64');
+            $filePathInterface = $fileInfosResultinterface['filename']; 
+            
+            // maping pour avoir certains param comme dans la V2
+            $request_bodyArray['procedure'] = [
+            'files' => [
+                [
+                    'name' => $filePathInterface,
+                    'id' => $request_bodyArray['data']['signature_request']['documents'][0]['id']
+                ]
+            ]
+        ];
+        
+        // a cette étape vous pouvez sauver en DB que votre document est signé
+        
+        // on récup le doc signé
+        
+        $fileapiid = [
+                    'srid' => $request_bodyArray['data']['signature_request']['id'],
+                    'docid' => $request_bodyArray['data']['signature_request']['documents'][0]['id']
+                ];
+
+                $fileResult = $wizisign->downloadSignedFile($fileapiid,'64');
+                
+                $filePath = $fileInfosResult['filename'];
+
+                $handle = fopen($filePath, 'w+');
+                fwrite($handle, base64_decode($fileResult));
+                fclose($handle);
+                
+                // voila ensuite à vous de faire ce que vous voulez du doc signé
+            
+        }
+
+        return new Response();
+    }
+
+
+```
