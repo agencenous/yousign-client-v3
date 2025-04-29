@@ -386,11 +386,20 @@ class Client
             CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_HTTPHEADER => [
                 sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
             ],
         ];
         if ($data) {
-            $curl_params[CURLOPT_POSTFIELDS] = json_encode($data);
+            // If data if a document, do not enode it
+            if(!empty($data['file'])){
+                $curl_params[CURLOPT_POSTFIELDS] = $data;
+
+            }
+            // If data is an array, encode it to JSON
+            else{
+                $curl_params[CURLOPT_POSTFIELDS] = json_encode($data);
+                $curl_params[CURLOPT_HTTPHEADER][] = 'Content-Type: application/json';
+
+            }
         }
         curl_setopt_array($curl, $curl_params);
 
