@@ -417,7 +417,7 @@ class Client
      */
     private function post(string $url, ?array $data=null, $raw=false)
     {
-        $this->api('POST', $url, $data, $raw);
+        return $this->api('POST', $url, $data, $raw);
     }
 
     /**
@@ -430,7 +430,7 @@ class Client
      */
     private function get(string $url, ?array $data=null, $raw=false)
     {
-        $this->api('GET', $url, $data, $raw);
+        return $this->api('GET', $url, $data, $raw);
     }
 
     /**
@@ -476,6 +476,7 @@ class Client
         $url = sprintf('%s/signature_requests/%s/documents', $this->apiBaseUrlWslash, $this->signatureRequestId);
 
         $this->documentUploadResponse = $this->post($url, $data);
+        
         $this->documentId = $this->documentUploadResponse['id'];
 
         return $this->documentUploadResponse;
