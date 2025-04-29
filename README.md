@@ -1,5 +1,7 @@
-# yousign-client-api-V3-2024
+# yousign-client
  client pour l'Api V3 de Yousign 2024 PHP
+
+ Fork de [https://github.com/oliviernival/yousign-client-api-V3-2024](oliviernival/yousign-client-api-V3-2024)
 
 # site officiel de Yousign la doc :
 
@@ -8,7 +10,7 @@ https://developers.yousign.com/docs/introduction-new
 # Installation
 via composer
 ```php 
-composer require oliviernival/yousign-client-api-v3-2024
+composer require agencenous/yousign-client
 ```
 # Utilisation
 
@@ -17,7 +19,7 @@ composer require oliviernival/yousign-client-api-v3-2024
 require_once '/path/to/vendor/autoload.php';
 $apikey = "votre-clef-yousign";
 $mode = "prod"; // ou "dev" pour url de dev de yousign
-$client = new NvlYousignClientApiV3\NvlYousignClientV3($apikey,$mode);
+$client = new YousignClientV3\YousignClientV3($apikey,$mode);
 $opt = [
             "name" => "le nom de ma signature",
             "delivery_mode" => "email",
@@ -101,7 +103,7 @@ ainsi pour la plupart des méthodes de procédures avancées les signatures sont
 
 $mode = "prod";
 
-$wizisign = new NvlYousignClientApiV3\NvlYousignClientV3('yourapikey',$mode);
+$wizisign = new YousignClientV3\YousignClientV3('yourapikey',$mode);
 
 // on indique le chemin du répertoire du fichier pdf
 // chemin absolut du répertoire du fichier pdf à signer pour les procédures avancés :
@@ -247,7 +249,7 @@ Vous devez avoir créé un webhook qui envoie une requette vers votre serveur po
             
             $mode = "prod";
 
-            $wizisign = new NvlYousignClientApiV3\NvlYousignClientV3('yourapikey',$mode);
+            $wizisign = new YousignClientV3\YousignClientV3('yourapikey',$mode);
 
             $fileInfosResultinterface = $wizisign->downloadSignedFileInfos($fileapiid,'64');
             $filePathInterface = $fileInfosResultinterface['filename']; 

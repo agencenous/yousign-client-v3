@@ -1,14 +1,18 @@
 {
-    "name": "oliviernival/yousign-client-api-v3-2024",
-    "description": "Client pour l'API V3 de yousign sortie en 2024",
+    "name": "agencenous/yousign-client-v3",
+    "description": "Client pour l'API V3 de YouSign 2024, oliviernival/yousign-client-api-V3-2024",
     "type": "library",
     "license": "MIT",
     "autoload": {
         "psr-4": {
-            "NvlYousignClientApiV3\\": "src/"
+            "YousignClientV3\\": "src/"
         }
     },
     "authors": [
+        {
+            "name": "Bastien Ho",
+            "email": "bastien@avecnous.eu"
+        },
         {
             "name": "Olivier Nival",
             "email": "olivier.nival@gmail.com"
