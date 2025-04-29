@@ -368,24 +368,69 @@ class Client
         return $this;
     }
 
-    private function post($url, $data)
-    {
+    /**
+     * Calls the API
+     * 
+     * @param string $method
+     * @param string $url
+     * @param array|null $data
+     * @param bool $raw if true, returns raw response, if false returns json_decoded response
+     * 
+     * @return array
+     */
+    private function api(string $method, string $url, ?array $data=null, $raw=false){
         $curl = curl_init();
-        curl_setopt_array($curl, [
+        $curl_params = [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_CUSTOMREQUEST => $method,
             CURLOPT_HTTPHEADER => [
                 sprintf('Authorization: Bearer %s', $this->apikey),
                 'Content-Type: application/json'
             ],
-        ]);
+        ];
+        if ($data) {
+            $curl_params[CURLOPT_POSTFIELDS] = json_encode($data);
+        }
+        curl_setopt_array($curl, $curl_params);
 
         $response = curl_exec($curl);
+
+        // $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+
         curl_close($curl);
 
+        if($raw){
+            return $response;
+        }
+
         return json_decode($response, true);
+    }
+
+    /**
+     * POST request
+     * 
+     * @param string $url
+     * @param array|null $data
+     * 
+     * @return array
+     */
+    private function post(string $url, ?array $data=null, $raw=false)
+    {
+        $this->api('POST', $url, $data, $raw);
+    }
+
+    /**
+     * GET request
+     * 
+     * @param string $url
+     * @param array|null $data
+     * 
+     * @return array
+     */
+    private function get(string $url, ?array $data=null, $raw=false)
+    {
+        $this->api('GET', $url, $data, $raw);
     }
 
     /**
@@ -408,26 +453,10 @@ class Client
         // }
         // JSON;
 
-        $data = json_encode($dataArray);
+        $url = sprintf('%s/signature_requests', $this->apiBaseUrlWslash); 
 
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests', $this->apiBaseUrlWslash),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
-
-        $initiateSignatureRequestResponse = curl_exec($curl);
-        $this->signatureRequest = json_decode($initiateSignatureRequestResponse, true);
+        $this->signatureRequest = $this->post($url, $dataArray);
         $this->signatureRequestId = $this->signatureRequest['id'];
-
-        curl_close($curl);
 
         return $this->signatureRequest;
 
@@ -439,28 +468,15 @@ class Client
      */
     public function addDocument(string $pdfDocumentPath)
     {
-        $curl = curl_init();
-        curl_setopt_array(
-            $curl,
-            [
-                CURLOPT_URL => sprintf('%s/signature_requests/%s/documents', $this->apiBaseUrlWslash, $this->signatureRequestId),
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POSTFIELDS => [
+        $data = [
                     'file' => new \CURLFile($pdfDocumentPath, 'application/pdf'),
                     'nature' => 'signable_document',
                     'parse_anchors' => 'true'
-                ],
-                CURLOPT_HTTPHEADER => [
-                    sprintf('Authorization: Bearer %s', $this->apikey),
-                ],
-            ]);
+        ];
+        $url = sprintf('%s/signature_requests/%s/documents', $this->apiBaseUrlWslash, $this->signatureRequestId);
 
-        $initDocumentUploadResponse = curl_exec($curl);
-        $this->documentUploadResponse = json_decode($initDocumentUploadResponse, true);
+        $this->documentUploadResponse = $this->post($url, $data);
         $this->documentId = $this->documentUploadResponse['id'];
-
-        curl_close($curl);
 
         return $this->documentUploadResponse;
 
@@ -497,23 +513,9 @@ class Client
         //   ]
         // }
         //JSON;
-        $data = json_encode($signerArray);
+        $url  = sprintf('%s/signature_requests/%s/signers', $this->apiBaseUrlWslash, $this->signatureRequestId);
 
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests/%s/signers', $this->apiBaseUrlWslash, $this->signatureRequestId),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
-
-        $initaddSignerResponse = curl_exec($curl);
-        $this->addSignerResponse = json_decode($initaddSignerResponse,true);
-        curl_close($curl);
+        $this->addSignerResponse = $this->post($url, $signerArray);
 
         return $this->addSignerResponse;
     }
@@ -525,20 +527,9 @@ class Client
     {
         ## 4 - Activate the Signature Request:
 
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests/%s/activate', $this->apiBaseUrlWslash, $this->signatureRequestId),
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
+        $url = sprintf('%s/signature_requests/%s/activate', $this->apiBaseUrlWslash, $this->signatureRequestId);
 
-        $initActivateSignatureRequestResponse = curl_exec($curl);
-
-        $this->ActivateSignatureResponse = json_decode($initActivateSignatureRequestResponse,true);
-        curl_close($curl);
+        $this->ActivateSignatureResponse = $this->post($url);
 
         return $this->ActivateSignatureResponse;
     }
@@ -552,26 +543,11 @@ class Client
         */
 
         ## 4 - create webhook:
-        $data=json_encode($params);
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/webhooks', $this->apiBaseUrlWslash),
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
+        $url = sprintf('%s/webhooks', $this->apiBaseUrlWslash);
 
-        $initAddWebHookRequestResponse = curl_exec($curl);
-
-        $this->AddWebHookResponse = json_decode($initAddWebHookRequestResponse,true);
-        curl_close($curl);
+        $this->AddWebHookResponse = $this->post($url, $params);
 
         return $this->AddWebHookResponse;
-
-
     }
 
 
@@ -599,27 +575,10 @@ class Client
             "delivery_mode" => "none",
             "timezone" => "Europe/Paris"
         ];
+        $url = sprintf('%s/signature_requests', $this->apiBaseUrlWslash);
 
-        $data = json_encode($dataArray);
-
-        $curl = curl_init();
-
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests', $this->apiBaseUrlWslash),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
-
-        $initiateSignatureRequestResponse = curl_exec($curl);
-        $this->signatureRequest = json_decode($initiateSignatureRequestResponse, true);
+        $this->signatureRequest = $this->post($url, $dataArray);
         $this->signatureRequestId = $this->signatureRequest['id'];
-
-        curl_close($curl);
 
         return $this->signatureRequest;
 
@@ -640,32 +599,16 @@ class Client
     {
         $this->nbPages = $this->countPages($this->pdfBaseDir.$namefile);
 
-
-
         $pdfDocumentPath = $namefile;
-        $curl = curl_init();
-        curl_setopt_array(
-            $curl,
-            [
-                CURLOPT_URL => sprintf('%s/signature_requests/%s/documents', $this->apiBaseUrlWslash, $this->signatureRequestId),
-                CURLOPT_CUSTOMREQUEST => 'POST',
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POSTFIELDS => [
-                    'file' => new \CURLFile($this->pdfBaseDir.$pdfDocumentPath, 'application/pdf'),
-                    'nature' => 'signable_document',
-                    'parse_anchors' => 'true'
-                ],
-                CURLOPT_HTTPHEADER => [
-                    sprintf('Authorization: Bearer %s', $this->apikey),
-                ],
-            ]);
+        $url = printf('%s/signature_requests/%s/documents', $this->apiBaseUrlWslash, $this->signatureRequestId);
+        $data = [
+            'file' => new \CURLFile($this->pdfBaseDir.$pdfDocumentPath, 'application/pdf'),
+            'nature' => 'signable_document',
+            'parse_anchors' => 'true'
+        ];
 
-        $initDocumentUploadResponse = curl_exec($curl);
-        $this->documentUploadResponse = json_decode($initDocumentUploadResponse, true);
+        $this->documentUploadResponse = $this->post($url, $data);
         $this->documentId = $this->documentUploadResponse['id'];
-
-        curl_close($curl);
-
 
         return $this->documentUploadResponse;
 
@@ -734,26 +677,10 @@ class Client
             ]
         ];
         $data = json_encode($this->signerData);
+        $url = sprintf('%s/signature_requests/%s/signers', $this->apiBaseUrlWslash, $this->signatureRequestId);
 
-
-
-
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests/%s/signers', $this->apiBaseUrlWslash, $this->signatureRequestId),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $data,
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
-
-        $initaddSignerResponse = curl_exec($curl);
-        $this->addSignerResponse = json_decode($initaddSignerResponse,true);
-        curl_close($curl);
-
+        $this->addSignerResponse = $this->post($url, $this->signerData);
+   
         return $this->addSignerResponse;
 
     }
@@ -761,26 +688,10 @@ class Client
     public function AdvancedProcedurePut()
     {
         ## 4 - Activate the Signature Request:
+        $url = sprintf('%s/signature_requests/%s/activate', $this->apiBaseUrlWslash, $this->signatureRequestId);
 
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests/%s/activate', $this->apiBaseUrlWslash, $this->signatureRequestId),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
-
-        $initActivateSignatureRequestResponse = curl_exec($curl);
-
-        $this->ActivateSignatureResponse = json_decode($initActivateSignatureRequestResponse,true);
+        $this->ActivateSignatureResponse = $this->post($url);
         $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-
-
 
         return $this->ActivateSignatureResponse;
         if ($httpcode == 200){
@@ -788,31 +699,19 @@ class Client
         } else {
             return false;
         }
-
     }
 
+    /**
+     * recuperer la liste des membres
+     * 
+     * @return array|mixed
+     */
     public function AdvancedProcedureGetMembers()
     {
-        // recuperer la liste des membres
 
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests/%s/signers', $this->apiBaseUrlWslash, $this->signatureRequestId),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
+        $url = sprintf('%s/signature_requests/%s/signers', $this->apiBaseUrlWslash, $this->signatureRequestId);
 
-        $initListMemberRequestResponse = curl_exec($curl);
-
-        $this->memberList = json_decode($initListMemberRequestResponse,true);
-        curl_close($curl);
-
-
-
+        $this->memberList = $this->get($url);
 
         return $this->memberList;
     }
@@ -821,23 +720,9 @@ class Client
     {
         // GET /signature_requests/b9bf5521-00eb-4044-adf5-da4ea31a48e0/signers/395375bb-93d9-4762-8e11-5caa4734afc1
 
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests/%s/signers/%s', $this->apiBaseUrlWslash, $this->signatureRequestId,$memberId),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
+        $url = sprintf('%s/signature_requests/%s/signers/%s', $this->apiBaseUrlWslash, $this->signatureRequestId,$memberId);
 
-        $initSignLinkRequestResponse = curl_exec($curl);
-
-        $this->signLink = json_decode($initSignLinkRequestResponse,true);
-        curl_close($curl);
-
-
+        $this->signLink = $this->get($url);
 
         return $this->signLink;
 
@@ -846,64 +731,28 @@ class Client
     public function downloadSignedFile($fileid, $mode)
     {
         // https://api-sandbox.yousign.app/v3/signature_requests/{signatureRequestId}/documents/{documentId}/download
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests/%s/documents/%s/download', $this->apiBaseUrlWslash, $fileid['srid'],$fileid['docid']),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
+        $url = sprintf('%s/signature_requests/%s/documents/%s/download', $this->apiBaseUrlWslash, $fileid['srid'],$fileid['docid']);
 
-        $response = curl_exec($curl);
+        $response = $this->get($url, null, true);
+        if (!$response){
+            return false;
+        }
 
-        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
         if($mode == '64'){
             return base64_encode($response);
         } else {
             return $response;
         }
-
-        if ($httpcode == 200){
-            return $response;
-        } else {
-            return false;
-        }
-
     }
 
     public function downloadSignedFileInfos($fileid, $mode)
     {
         // https://api-sandbox.yousign.app/v3/signature_requests/{signatureRequestId}/documents/{documentId}
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests/%s/documents/%s', $this->apiBaseUrlWslash, $fileid['srid'],$fileid['docid']),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
 
-        $response = curl_exec($curl);
+        $url = sprintf('%s/signature_requests/%s/documents/%s', $this->apiBaseUrlWslash, $fileid['srid'],$fileid['docid']);
 
-        $httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        curl_close($curl);
-
-
-        json_decode($response,true);
-
-
-        return json_decode($response,true);
-        if ($httpcode == 200){
-            return $response;
-        } else {
-            return false;
-        }
+        $response = $this->get($url);
+        return $response;
 
     }
 
@@ -911,22 +760,9 @@ class Client
     {
         // https://api-sandbox.yousign.app/v3/signature_requests/{signatureRequestId}/signers/{signerId}/audit_trails/download
 
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_URL => sprintf('%s/signature_requests/%s/signers/%s/audit_trails/download',$this->apiBaseUrlWslash, $requestID,$memberId),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-            CURLOPT_HTTPHEADER => [
-                sprintf('Authorization: Bearer %s', $this->apikey),
-                'Content-Type: application/json'
-            ],
-        ]);
+        $url = sprintf('%s/signature_requests/%s/signers/%s/audit_trails/download',$this->apiBaseUrlWslash, $requestID,$memberId);
 
-        $initSignProofRequestResponse = curl_exec($curl);
-
-        $this->SignProof =$initSignProofRequestResponse;
-        curl_close($curl);
-
+        $this->SignProof = $this->get($url, null, true);
 
         return $this->SignProof;
 
