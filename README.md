@@ -19,7 +19,7 @@ composer require agencenous/yousign-client-v3
 require_once '/path/to/vendor/autoload.php';
 $apikey = "votre-clef-yousign";
 $mode = "prod"; // ou "dev" pour url de dev de yousign
-$client = new YousignClientV3\YousignClientV3($apikey,$mode);
+$client = new YousignClientV3\Client($apikey,$mode);
 $opt = [
             "name" => "le nom de ma signature",
             "delivery_mode" => "email",

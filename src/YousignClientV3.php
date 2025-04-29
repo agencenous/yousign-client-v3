@@ -4,7 +4,7 @@
 namespace YousignClientV3;
 
 
-class YousignClientV3
+class Client
 {
 
 
@@ -366,6 +366,26 @@ class YousignClientV3
     {
         $this->ActivateSignatureResponse = $ActivateSignatureResponse;
         return $this;
+    }
+
+    private function post($url, $data)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => [
+                sprintf('Authorization: Bearer %s', $this->apikey),
+                'Content-Type: application/json'
+            ],
+        ]);
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        return json_decode($response, true);
     }
 
     /**
