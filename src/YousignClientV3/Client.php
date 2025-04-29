@@ -125,7 +125,7 @@ class Client
 
     /**
      * @param string $pdfBaseDir
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
     public function setPdfBaseDir(string $pdfBaseDir)
     {
@@ -144,9 +144,9 @@ class Client
 
     /**
      * @param array $signatureRequest
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setSignatureRequest(array $signatureRequest): YousignClientV3
+    public function setSignatureRequest(array $signatureRequest): Client
     {
         $this->signatureRequest = $signatureRequest;
         return $this;
@@ -162,9 +162,9 @@ class Client
 
     /**
      * @param string $apikey
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setApikey(string $apikey): YousignClientV3
+    public function setApikey(string $apikey): Client
     {
         $this->apikey = $apikey;
         return $this;
@@ -180,9 +180,9 @@ class Client
 
     /**
      * @param string $apiBaseUrl
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setApiBaseUrl(string $apiBaseUrl): YousignClientV3
+    public function setApiBaseUrl(string $apiBaseUrl): Client
     {
         $this->apiBaseUrl = $apiBaseUrl;
         return $this;
@@ -198,9 +198,9 @@ class Client
 
     /**
      * @param string $apiBaseUrlWslash
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setApiBaseUrlWslash(string $apiBaseUrlWslash): YousignClientV3
+    public function setApiBaseUrlWslash(string $apiBaseUrlWslash): Client
     {
         $this->apiBaseUrlWslash = $apiBaseUrlWslash;
         return $this;
@@ -216,9 +216,9 @@ class Client
 
     /**
      * @param string $idfile
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setIdfile(string $idfile): YousignClientV3
+    public function setIdfile(string $idfile): Client
     {
         $this->idfile = $idfile;
         return $this;
@@ -234,9 +234,9 @@ class Client
 
     /**
      * @param string $idAdvProc
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setIdAdvProc(string $idAdvProc): YousignClientV3
+    public function setIdAdvProc(string $idAdvProc): Client
     {
         $this->idAdvProc = $idAdvProc;
         return $this;
@@ -252,9 +252,9 @@ class Client
 
     /**
      * @param array $member
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setMember(array $member): YousignClientV3
+    public function setMember(array $member): Client
     {
         $this->member = $member;
         return $this;
@@ -270,9 +270,9 @@ class Client
 
     /**
      * @param array $fileobject
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setFileobject(array $fileobject): YousignClientV3
+    public function setFileobject(array $fileobject): Client
     {
         $this->fileobject = $fileobject;
         return $this;
@@ -288,9 +288,9 @@ class Client
 
     /**
      * @param string $signatureRequestId
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setSignatureRequestId(string $signatureRequestId): YousignClientV3
+    public function setSignatureRequestId(string $signatureRequestId): Client
     {
         $this->signatureRequestId = $signatureRequestId;
         return $this;
@@ -306,9 +306,9 @@ class Client
 
     /**
      * @param array $documentUploadResponse
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setDocumentUploadResponse(array $documentUploadResponse): YousignClientV3
+    public function setDocumentUploadResponse(array $documentUploadResponse): Client
     {
         $this->documentUploadResponse = $documentUploadResponse;
         return $this;
@@ -324,9 +324,9 @@ class Client
 
     /**
      * @param string $documentId
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setDocumentId(string $documentId): YousignClientV3
+    public function setDocumentId(string $documentId): Client
     {
         $this->documentId = $documentId;
         return $this;
@@ -342,9 +342,9 @@ class Client
 
     /**
      * @param array $addSignerResponse
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setAddSignerResponse(array $addSignerResponse): YousignClientV3
+    public function setAddSignerResponse(array $addSignerResponse): Client
     {
         $this->addSignerResponse = $addSignerResponse;
         return $this;
@@ -360,9 +360,9 @@ class Client
 
     /**
      * @param array $ActivateSignatureResponse
-     * @return YousignClientV3
+     * @return YousignClientV3\Client
      */
-    public function setActivateSignatureResponse(array $ActivateSignatureResponse): YousignClientV3
+    public function setActivateSignatureResponse(array $ActivateSignatureResponse): Client
     {
         $this->ActivateSignatureResponse = $ActivateSignatureResponse;
         return $this;
