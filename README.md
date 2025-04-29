@@ -1,4 +1,4 @@
-# yousign-client
+# yousign-client-v3
  client pour l'Api V3 de Yousign 2024 PHP
 
  Fork de [https://github.com/oliviernival/yousign-client-api-V3-2024](oliviernival/yousign-client-api-V3-2024)
@@ -10,7 +10,7 @@ https://developers.yousign.com/docs/introduction-new
 # Installation
 via composer
 ```php 
-composer require agencenous/yousign-client
+composer require agencenous/yousign-client-v3
 ```
 # Utilisation
 
