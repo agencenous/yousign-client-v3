@@ -461,10 +461,29 @@ class Client
         //   "timezone": "Europe/Paris"
         // }
         // JSON;
+        // $data = <<<JSON
+        // {
+        //   "type":"parameters_not_valid",
+        //   "detail":"You have some invalid params in your payload.",
+        //   "invalid_params":[
+        //      {
+        //          "name":"name",
+        //          "reason":"This value is too long. It should have 128 characters or less."
+        //      }
+        //   ]
+        // }
+        // JSON;
 
-        $url = sprintf('%s/signature_requests', $this->apiBaseUrlWslash); 
+        $url = sprintf('%s/signature_requests', $this->apiBaseUrlWslash);
 
-        $this->signatureRequest = $this->post($url, $dataArray);
+        $response  = $this->post($url, $dataArray);
+
+        if(isset($response['type']) && $response['type'] == 'parameters_not_valid'){
+            throw new \Exception('Error creating signature request: ' . $response['detail'].
+                ' Invalid params: ' . json_encode($response['invalid_params']));
+        }
+
+        $this->signatureRequest = $response;
         $this->signatureRequestId = $this->signatureRequest['id'];
 
         return $this->signatureRequest;
