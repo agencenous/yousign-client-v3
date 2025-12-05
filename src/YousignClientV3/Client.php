@@ -75,6 +75,10 @@ class Client
      * @var mixed
      */
     private $signLink;
+    /**
+     * @var mixed
+     */
+    private $SignProof;
 
     /**
      * @var string
